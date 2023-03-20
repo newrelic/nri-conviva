@@ -1,0 +1,42 @@
+integrations:
+  - name: nri-conviva
+    interval: 15m
+    timeout: 5m
+    env:
+      CLIENT_ID: {{CONVIVA_CLIENT_ID}}
+      CLIENT_SECRET: {{CONVIVA_CLIENT_SECRET}}
+      CONFIG_PATH: ${config.path}
+    config:
+      apiV3Url: https://api.conviva.com/insights/3.0/metrics
+      startOffset: 20m
+      endOffset: 10m
+      granularity: PT1M
+      metrics:
+      - metric: ad-bitrate
+        startOffset: 30m
+        endOffset: 10m
+        granularity: PT5M
+      - metric: framerate
+        dimensions:
+        - browser-name
+      - metric: plays
+        filters:
+          "browser_name":
+          - Safari
+          - Firefox
+          "geo_country_code":
+          - us
+        dimensions:
+        - browser-version
+      - names:
+        - ad-plays
+        - ad-ended-plays
+        granularity: PT10M
+      - names:
+        - exits-before-ad-start
+        - exit-before-video-starts
+        dimensions:
+        - device-name
+      - metricGroup: quality-summary
+        dimensions:
+        - asn
