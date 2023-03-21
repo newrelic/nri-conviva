@@ -28,9 +28,9 @@ type ConfigMetric struct {
 
 type Config struct {
 	ApiV3URL          string
-	StartOffset       string
-	EndOffset         string
-	Granularity       string
+	StartOffset       string			`yaml:"startOffset"`
+	EndOffset         string			`yaml:"endOffset"`
+	Granularity       string			`yaml:"granularity"`
 	Metrics           []ConfigMetric    `yaml:"metrics"`
 }
 

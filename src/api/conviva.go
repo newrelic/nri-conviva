@@ -200,9 +200,7 @@ func (c ConvivaCollector) makeUrl(
 		return "", err
 	}
 
-	if granularity != "" {
-		params = append(params, "granularity=" + granularity)
-	}
+	params = addGranularity(params, granularity, c.Granularity)
 
 	if len(filters) > 0 {
 		for k, v := range filters {
@@ -231,17 +229,17 @@ func addTimeParam(
 	paramName, offset1 string,
 	offset2 time.Duration,
 ) ([]string, error) {
-	var err error
-
 	if offset1 == "" && offset2 == 0 {
 		return params, nil
 	}
 	
-	var dur = offset2
+	d := offset2
 
 	if offset1 != "" {
-		if dur, err = time.ParseDuration(offset1); err != nil {
+		if dur, err := time.ParseDuration(offset1); err != nil {
 			return nil, err
+		} else {
+			d = dur
 		}
 	}
 
@@ -250,9 +248,18 @@ func addTimeParam(
 		fmt.Sprintf(
 			"%s=%d",
 			paramName,
-			time.Now().Add(-dur).UnixMilli() / 1000,
+			time.Now().Add(-d).UnixMilli() / 1000,
 		),
 	), nil
+}
+
+func addGranularity(params []string, g1, g2 string) []string {
+	if g1 != "" {
+		return append(params, "granularity=" + g1)
+	} else if g2 != "" {
+		return append(params, "granularity=" + g2)
+	}
+	return params
 }
 
 func (c ConvivaCollector) makeRequest(url string) ([]byte, error) {
