@@ -89,7 +89,7 @@ configuration options are supported.
 | granularity | The time interval granularity for the query, specified in [ISO 8601 format](https://en.wikipedia.org/wiki/ISO_8601#Durations) | PT1M |
 | metrics | The array of metric definitions specifying the metrics to collect | [] |
 
-** Time Range Note **
+**Time Range Note**
 
 The Conviva v3 Metrics API can return inconsistent results for "recent" data. In
 our testing, querying for data in the last 10 minutes at 1 minute granularity
