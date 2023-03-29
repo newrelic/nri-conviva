@@ -2,19 +2,19 @@
 
 # NRI Conviva Integration
 
-![GitHub forks](https://img.shields.io/github/forks/newrelic-experimental/nri-conviva?style=social)
-![GitHub stars](https://img.shields.io/github/stars/newrelic-experimental/nri-conviva?style=social)
-![GitHub watchers](https://img.shields.io/github/watchers/newrelic-experimental/nri-conviva?style=social)
+![GitHub forks](https://img.shields.io/github/forks/newrelic/nri-conviva?style=social)
+![GitHub stars](https://img.shields.io/github/stars/newrelic/nri-conviva?style=social)
+![GitHub watchers](https://img.shields.io/github/watchers/newrelic/nri-conviva?style=social)
 
-![GitHub all releases](https://img.shields.io/github/downloads/newrelic-experimental/nri-conviva/total)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/newrelic-experimental/nri-conviva)
-![GitHub last commit](https://img.shields.io/github/last-commit/newrelic-experimental/nri-conviva)
-![GitHub Release Date](https://img.shields.io/github/release-date/newrelic-experimental/nri-conviva)
+![GitHub all releases](https://img.shields.io/github/downloads/newrelic/nri-conviva/total)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/newrelic/nri-conviva)
+![GitHub last commit](https://img.shields.io/github/last-commit/newrelic/nri-conviva)
+![GitHub Release Date](https://img.shields.io/github/release-date/newrelic/nri-conviva)
 
-![GitHub issues](https://img.shields.io/github/issues/newrelic-experimental/nri-conviva)
-![GitHub issues closed](https://img.shields.io/github/issues-closed/newrelic-experimental/nri-conviva)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/newrelic-experimental/nri-conviva)
-![GitHub pull requests closed](https://img.shields.io/github/issues-pr-closed/newrelic-experimental/nri-conviva)
+![GitHub issues](https://img.shields.io/github/issues/newrelic/nri-conviva)
+![GitHub issues closed](https://img.shields.io/github/issues-closed/newrelic/nri-conviva)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/newrelic/nri-conviva)
+![GitHub pull requests closed](https://img.shields.io/github/issues-pr-closed/newrelic/nri-conviva)
 
 The project provides a New Relic Infrastructure integration that uses the
 [Conviva v3 Metrics API](https://developer.conviva.com/docs/metrics-api-v3/3e38d9ead39fc-metrics-v3-api-user-guide-beta)
