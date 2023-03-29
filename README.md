@@ -113,7 +113,7 @@ are supported in a metric definition.
 | endOffset | A query specific override for `endOffset` | |
 | granularity | A query specific override for `granularity` | |
 
-** Dimensions note **
+**Dimensions note**
 
 Dimensions can only be queried one at a time. This has two ramifications.
 
@@ -125,7 +125,7 @@ Dimensions can only be queried one at a time. This has two ramifications.
    not currently possible to do queries like
    `SELECT average(conviva.bitrate) FROM Metric WHERE browser_name = 'Chrome' *AND* geo_country_code = 'us`.
 
-** Filters note **
+**Filters note**
 
 [Logical OR filtering](https://developer.conviva.com/docs/metrics-api-v3/3e38d9ead39fc-metrics-v3-api-user-guide-beta#logical-or-filtering-of-the-same-dimension)
 is supported by specifying multiple values for a single filtering dimension.
