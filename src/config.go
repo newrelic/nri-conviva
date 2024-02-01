@@ -9,10 +9,7 @@ import (
 	sdk_log "github.com/newrelic/infra-integrations-sdk/v4/log"
 )
 const (
-	DEFAULT_API_V3_URL = "https://api.conviva.com/insights/3.0/metrics"
-	DEFAULT_START_OFFSET = "20m"
-	DEFAULT_END_OFFSET = "10m"
-	DEFAULT_GRANULARITY = "PT1M"
+	DEFAULT_API_V3_URL = "https://api.conviva.com/insights/3.0"
 )
 
 type ConfigMetric struct {
@@ -24,31 +21,21 @@ type ConfigMetric struct {
 	StartOffset     string              `yaml:"startOffset"`
 	EndOffset       string              `yaml:"endOffset"`
 	Granularity     string              `yaml:"granularity"`
+	RealTime        *bool				`yaml:"realTime,omitempty"`
 }
 
 type Config struct {
-	ApiV3URL          string
+	ApiV3URL      	  string			`yaml:"apiV3Url"`
 	StartOffset       string			`yaml:"startOffset"`
 	EndOffset         string			`yaml:"endOffset"`
 	Granularity       string			`yaml:"granularity"`
+	RealTime          *bool				`yaml:"realTime,omitempty"`
 	Metrics           []ConfigMetric    `yaml:"metrics"`
 }
 
 func applyDefaults(config *Config) {
 	if config.ApiV3URL == "" {
 		config.ApiV3URL = DEFAULT_API_V3_URL
-	}
-
-	if config.StartOffset == "" {
-		config.StartOffset = DEFAULT_START_OFFSET
-	}
-
-	if config.EndOffset == "" {
-		config.EndOffset = DEFAULT_END_OFFSET
-	}
-
-	if config.Granularity == "" {
-		config.Granularity = DEFAULT_GRANULARITY
 	}
 }
 
@@ -60,7 +47,7 @@ func loadConfig(configPath string, log sdk_log.Logger) (*Config, error) {
 		applyDefaults(cfg)
 		return cfg, nil
 	}
-	
+
 	fd, err := os.Open(configPath)
 	if err != nil {
 		return nil, err
@@ -73,7 +60,7 @@ func loadConfig(configPath string, log sdk_log.Logger) (*Config, error) {
 	}
 
 	cfg := &Config{}
-    
+
 	err = yaml.Unmarshal(rawConfig, cfg)
 	if err != nil {
 		return nil, err
