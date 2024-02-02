@@ -9,6 +9,10 @@ import (
 	"time"
 )
 
+const (
+	FIFTEEN_MINUTES = 15 * time.Minute
+)
+
 type ConvivaCollector struct {
 	URL             string
 	ClientId        string
@@ -16,6 +20,7 @@ type ConvivaCollector struct {
 	StartOffset     time.Duration
 	EndOffset		time.Duration
 	Granularity     string
+	RealTime		*bool
 	log             Logger
 }
 
@@ -26,6 +31,7 @@ func NewConvivaCollector(
 	StartOffset     string,
 	EndOffset		string,
 	Granularity     string,
+	RealTime		*bool,
 	log             Logger,
 ) (*ConvivaCollector, error) {
 	var err error
@@ -52,6 +58,7 @@ func NewConvivaCollector(
 		startOffset,
         endOffset,
 		Granularity,
+		RealTime,
 		log,
 	}, nil
 }
@@ -63,6 +70,7 @@ func (c *ConvivaCollector) CollectMetricsByDimension(
 	startOffset string,
 	endOffset string,
 	granularity string,
+	realTime *bool,
 ) (*DimMetricData, error) {
 	url, err := c.makeUrl(
 		c.makePath(metricNames, "", dimension),
@@ -71,6 +79,7 @@ func (c *ConvivaCollector) CollectMetricsByDimension(
 		startOffset,
 		endOffset,
 		granularity,
+		realTime,
 	)
 	if err != nil {
 		return nil, err
@@ -86,6 +95,7 @@ func (c *ConvivaCollector) CollectMetricGroupByDimension(
 	startOffset string,
 	endOffset string,
 	granularity string,
+	realTime *bool,
 ) (*DimMetricData, error) {
 	url, err := c.makeUrl(
 		c.makePath(nil, metricGroup, dimension),
@@ -94,6 +104,7 @@ func (c *ConvivaCollector) CollectMetricGroupByDimension(
 		startOffset,
 		endOffset,
 		granularity,
+		realTime,
 	)
 	if err != nil {
 		return nil, err
@@ -108,6 +119,7 @@ func (c *ConvivaCollector) CollectMetrics(
 	startOffset string,
 	endOffset string,
 	granularity string,
+	realTime *bool,
 ) (*MetricData, error) {
 	url, err := c.makeUrl(
 		c.makePath(metricNames, "", ""),
@@ -116,6 +128,7 @@ func (c *ConvivaCollector) CollectMetrics(
 		startOffset,
 		endOffset,
 		granularity,
+		realTime,
 	)
 	if err != nil {
 		return nil, err
@@ -130,6 +143,7 @@ func (c *ConvivaCollector) CollectMetricGroup(
 	startOffset string,
 	endOffset string,
 	granularity string,
+	realTime *bool,
 ) (*MetricData, error) {
 	url, err := c.makeUrl(
 		c.makePath(nil, metricGroup, ""),
@@ -138,6 +152,7 @@ func (c *ConvivaCollector) CollectMetricGroup(
 		startOffset,
 		endOffset,
 		granularity,
+		realTime,
 	)
 	if err != nil {
 		return nil, err
@@ -170,6 +185,27 @@ func (c ConvivaCollector) makePath(
 
 	return s
 }
+
+func useRealTime(
+	start time.Duration,
+	r1 *bool,
+	r2 *bool,
+) bool {
+	if r1 != nil && !*r1 {
+		return false
+	}
+
+	if r2 != nil && !*r2 {
+		return false
+	}
+
+	if start != 0 && start > FIFTEEN_MINUTES {
+		return false
+	}
+
+	return true
+}
+
 func (c ConvivaCollector) makeUrl(
 	path string,
 	metricNames []string,
@@ -177,30 +213,40 @@ func (c ConvivaCollector) makeUrl(
 	startOffset string,
 	endOffset string,
 	granularity string,
+	realTime *bool,
 ) (string, error) {
 	var params []string
 
-	params, err := addTimeParam(
-		params,
-		"start_epoch",
-		startOffset,
-		c.StartOffset,
-	)
+	start, err := getDuration(startOffset, c.StartOffset)
 	if err != nil {
 		return "", err
 	}
 
-	params, err = addTimeParam(
-		params,
-		"end_epoch",
-		endOffset,
-		c.EndOffset,
-	)
+	end, err := getDuration(endOffset, c.EndOffset)
 	if err != nil {
 		return "", err
+	}
+
+	if (start != 0) {
+		c.log.Debugf("start: %d, end: %d", start, end)
+
+		if end > start {
+			return "", fmt.Errorf(
+				"end offset %d is more than start offset %d",
+				end,
+				start,
+			)
+		}
+
+		params = addTimeRange(params, start, end)
 	}
 
 	params = addGranularity(params, granularity, c.Granularity)
+
+	endpoint := "real-time-metrics"
+	if !useRealTime(start, realTime, c.RealTime) {
+		endpoint = "metrics"
+	}
 
 	if len(filters) > 0 {
 		for k, v := range filters {
@@ -216,41 +262,50 @@ func (c ConvivaCollector) makeUrl(
 		}
 	}
 
+	if len(params) == 0 {
+		return fmt.Sprintf(
+			"%s/%s/%s",
+			c.URL,
+			endpoint,
+			path,
+		), nil
+	}
+
 	return fmt.Sprintf(
-		"%s/%s?%s",
+		"%s/%s/%s?%s",
 		c.URL,
+		endpoint,
 		path,
 		strings.Join(params, "&"),
 	), nil
 }
 
-func addTimeParam(
-	params []string,
-	paramName, offset1 string,
-	offset2 time.Duration,
-) ([]string, error) {
-	if offset1 == "" && offset2 == 0 {
-		return params, nil
-	}
-	
+func getDuration(offset1 string, offset2 time.Duration) (time.Duration, error) {
 	d := offset2
 
 	if offset1 != "" {
 		if dur, err := time.ParseDuration(offset1); err != nil {
-			return nil, err
+			return 0, err
 		} else {
 			d = dur
 		}
 	}
 
-	return append(
-		params,
-		fmt.Sprintf(
-			"%s=%d",
-			paramName,
-			time.Now().Add(-d).UnixMilli() / 1000,
-		),
-	), nil
+	return d, nil
+}
+
+func addTimeRange(params []string, start, end time.Duration) []string {
+	params = append(params, fmt.Sprintf(
+		"start_epoch=%d",
+		time.Now().Add(-start).UnixMilli() / 1000,
+	))
+
+	params = append(params, fmt.Sprintf(
+		"end_epoch=%d",
+		time.Now().Add(-end).UnixMilli() / 1000,
+	))
+
+	return params
 }
 
 func addGranularity(params []string, g1, g2 string) []string {
@@ -259,6 +314,7 @@ func addGranularity(params []string, g1, g2 string) []string {
 	} else if g2 != "" {
 		return append(params, "granularity=" + g2)
 	}
+
 	return params
 }
 
@@ -281,7 +337,7 @@ func (c ConvivaCollector) makeRequest(url string) ([]byte, error) {
 	}
 
 	defer resp.Body.Close()
-	
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
@@ -342,6 +398,6 @@ func (c ConvivaCollector) getMetricDataByDimension(
 		"unmarshalling took %dms",
 		time.Since(then).Milliseconds(),
 	)
-	
+
 	return metricData, nil
 }

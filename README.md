@@ -83,20 +83,14 @@ configuration options are supported.
 
 | Variable Name | Description | Default |
 | --- | --- | --- |
-| apiV3Url | The Conviva v3 API endpoint | https://api.conviva.com/insights/3.0/metrics |
-| startOffset | An offset from the current time for the start of the query time range, specified as a [Go duration string](https://pkg.go.dev/time#ParseDuration) | 20m |
-| endOffset | An offset from the current time for the end of the query time range, specified as a [Go duration string](https://pkg.go.dev/time#ParseDuration) | 10m |
-| granularity | The time interval granularity for the query, specified in [ISO 8601 format](https://en.wikipedia.org/wiki/ISO_8601#Durations) | PT1M |
+| apiV3Url | The Conviva v3 API endpoint | https://api.conviva.com/insights/3.0 |
+| startOffset | An offset from the current time for the start of the query time range, specified as a [Go duration string](https://pkg.go.dev/time#ParseDuration) | |
+| endOffset | An offset from the current time for the end of the query time range, specified as a [Go duration string](https://pkg.go.dev/time#ParseDuration) | |
+| granularity | The time interval granularity for the query, specified in [ISO 8601 format](https://en.wikipedia.org/wiki/ISO_8601#Durations) | |
+| realTime | Flag that can be used to toggle the use of [real time metrics](https://developer.conviva.com/docs/metrics-api-v3/3434cc866b1a9-options-to-select-a-time-range#real-time-metrics) vs [historical metrics](https://developer.conviva.com/docs/metrics-api-v3/3434cc866b1a9-options-to-select-a-time-range#historical-metrics)
 | metrics | The array of metric definitions specifying the metrics to collect | [] |
 
-**Time Range Note**
-
-The Conviva v3 Metrics API can return inconsistent results for "recent" data. In
-our testing, querying for data in the last 10 minutes at 1 minute granularity
-was problematic. This is why the default `endOffset` is `10m`. Conviva is aware
-of these issues and may address them in the future. With the default values for
-`startOffset`, `endOffset`, and `granularity`, we were able to see consistent
-results.
+##### Metrics
 
 The metrics that the Conviva collector should collect are specfied as a list of
 metric definitions in the `metrics` configuration option. The following options
@@ -109,11 +103,50 @@ are supported in a metric definition.
 | names | A list of multiple metric names to collect in a single query | |
 | dimensions | A list of group by dimension names to collect for the metric or metric group | [] |
 | filters | A set of filtering dimensions to filter results by where each filter is specified as a key:value pair where the key is a dimension name and the value is a list of values to include | {} |
-| startOffset | A query specific override for `startOffset` | |
-| endOffset | A query specific override for `endOffset` | |
-| granularity | A query specific override for `granularity` | |
+| startOffset | A query specific override for the global `startOffset` | |
+| endOffset | A query specific override for the global `endOffset` | |
+| granularity | A query specific override for the global `granularity` | |
+| realTime | A query specific override for the global `realTime` flag | |
 
-**Dimensions note**
+##### Time range and granularity
+
+The [time range](https://developer.conviva.com/docs/metrics-api-v3/3434cc866b1a9-options-to-select-a-time-range#options-to-select-a-time-range)
+and [granularity](https://developer.conviva.com/docs/metrics-api-v3/66fa07fe366d2-granularity-options)
+used to query the Conviva v3 Metrics API are specified via the `startOffset`,
+`endOffset`, and `granularity` configuration options. These options can be
+configured globally for all queries as part of the top-level collector
+configuration options and can be overriden for individual queries in the metric
+definition options.
+
+If a `startOffset` is provided but no `endOffset` is specified, the `endOffset`
+will default to 0, causing the current time to be passed for the `end_epoch`
+value when the API call is made.
+
+If an `endOffset` is provided but no `startOffset` is provided, the `endOffset`
+will be ignored and neither `start_epoch` nor `end_epoch` will be passed when
+the API call is made. In this case, the default time range will be used by
+Conviva.
+
+##### Real-time vs historical metrics
+
+By default, the Conviva integration will fetch metrics using the real-time
+metrics endpoint (`https://api.conviva.com/insights/3.0/real-time-metrics`).
+The Conviva integration will automatically switch to use the historical metrics
+endpoint (`https://api.conviva.com/insights/3.0/metrics`) if the `startOffset`
+is greater than 15 minutes in the past. Additionally, use of the real-time
+metrics endpoint can be explicitly disabled by setting the `realTime` flag to
+`false` at the global or metric definition level.
+
+**NOTE:**
+
+The Conviva v3 Metrics API can return inconsistent results for "recent" data
+when querying historical metrics. In our testing, querying for data in the last
+10 minutes at 1 minute granularity was problematic. The minimum values for
+`startOffset`, `endOffset`, and `granularity` where we were able to see
+consistent results are `20m`, `10m`, and `PT1M`, respectively. When querying for
+recent data, it is recommended to query real-time metrics (the default).
+
+##### Dimensions
 
 Dimensions can only be queried one at a time. This has two ramifications.
 
@@ -125,7 +158,7 @@ Dimensions can only be queried one at a time. This has two ramifications.
    not currently possible to do queries like
    `SELECT average(conviva.bitrate) FROM Metric WHERE browser_name = 'Chrome' *AND* geo_country_code = 'us`.
 
-**Filters note**
+##### Filters
 
 [Logical OR filtering](https://developer.conviva.com/docs/metrics-api-v3/3e38d9ead39fc-metrics-v3-api-user-guide-beta#logical-or-filtering-of-the-same-dimension)
 is supported by specifying multiple values for a single filtering dimension.
@@ -146,7 +179,7 @@ $ make build
 ```
 
 The command above executes the tests for the NGINX integration and builds an
-executable file called `nri-conviva` under the `bin` directory. 
+executable file called `nri-conviva` under the `bin` directory.
 
 To start the integration, run `nri-conviva`:
 

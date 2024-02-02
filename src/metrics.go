@@ -136,7 +136,7 @@ func newMetric(
 			return err
 		}
 	}
-	
+
 	entity.AddMetric(metric)
 
 	return nil
@@ -197,7 +197,7 @@ func createCountFunc(metricName string, fn GetCountMetricFunc) AddMetricFunc {
 				d,
 			)
 		}
-	
+
 		return nil
 	}
 }
@@ -208,7 +208,7 @@ func createGaugeFunc(metricName string, fn GetGaugeMetricFunc) AddMetricFunc {
 		t time.Time,
 		d *api.Dimension,
 		m *api.Metrics,
-	) error { 
+	) error {
 		g := fn(m)
 		if g != nil {
 			return newGaugeMetric(
@@ -219,7 +219,7 @@ func createGaugeFunc(metricName string, fn GetGaugeMetricFunc) AddMetricFunc {
 				d,
 			)
 		}
-	
+
 		return nil
 	}
 }
@@ -280,419 +280,419 @@ func createCountPercentageFunc(
 
 func initMetrics() {
 	metricAdders = append(metricAdders, createCountPercentageFunc(
-		"abandonment", 
+		"abandonment",
 		func (m *api.Metrics) *api.CountPercentage {
 			return m.Abandonment
 		},
 	))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"abandonment_with_pre_roll", 
+		"abandonment_with_pre_roll",
 		func (m *api.Metrics) *api.Gauge {
 			return PercentageToGauge(m.AbandonmentWithPreRoll)
 		},
 	))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"abandonment_without_pre_roll", 
+		"abandonment_without_pre_roll",
 		func (m *api.Metrics) *api.Gauge {
 			return PercentageToGauge(m.AbandonmentWithoutPreRoll)
 		},
 	))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"ad_actual_duration", 
+		"ad_actual_duration",
 		func (m *api.Metrics) *api.Gauge {
 			return m.AdActualDuration
 		},
 	))
 	metricAdders = append(metricAdders, createCountFunc(
-		"ad_attempts", 
+		"ad_attempts",
 		func (m *api.Metrics) *api.Count {
 			return m.AdAttempts
 		},
 	))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"ad_bitrate", 
+		"ad_bitrate",
 		func (m *api.Metrics) *api.Gauge {
 			return BitrateToGauge(m.AdBitrate)
 		},
 	))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"ad_completed_creative_plays", 
+		"ad_completed_creative_plays",
 		func (m *api.Metrics) *api.Gauge {
 			return m.AdCompletedCreativePlays
 		},
 	))
 	metricAdders = append(metricAdders, createCountFunc(
-		"ad_concurrent_plays", 
+		"ad_concurrent_plays",
 		func (m *api.Metrics) *api.Count {
 			return m.AdConcurrentPlays
 		},
 	))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"ad_connection_induced_rebuffering_ratio", 
+		"ad_connection_induced_rebuffering_ratio",
 		func (m *api.Metrics) *api.Gauge {
 			return RatioToGauge(m.AdConnectionInducedRebufferingRatio)
 		},
 	))
 	metricAdders = append(metricAdders, createMetricsFunc(addAdEndedPlays))
 	metricAdders = append(metricAdders, createCountPercentageFunc(
-		"ad_exit_before_video_starts", 
+		"ad_exit_before_video_starts",
 		func (m *api.Metrics) *api.CountPercentage {
 			return m.AdExitBeforeVideoStarts
 		},
 	))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"ad_framerate", 
+		"ad_framerate",
 		func (m *api.Metrics) *api.Gauge {
 			return FramerateToGauge(m.AdFramerate)
 		},
 	))
 	metricAdders = append(metricAdders, createMetricsFunc(addAdMinutesPlayed))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"ad_percentage_complete", 
+		"ad_percentage_complete",
 		func (m *api.Metrics) *api.Gauge {
 			return PercentageToGauge(m.AdPercentageComplete)
 		},
 	))
 	metricAdders = append(metricAdders, createCountPercentageFunc(
-		"ad_plays", 
+		"ad_plays",
 		func (m *api.Metrics) *api.CountPercentage {
 			return m.AdPlays
 		},
 	))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"ad_rebuffering_ratio", 
+		"ad_rebuffering_ratio",
 		func (m *api.Metrics) *api.Gauge {
 			return RatioToGauge(m.AdRebufferingRatio)
 		},
 	))
 	metricAdders = append(metricAdders, createCountFunc(
-		"ad_unique_devices", 
+		"ad_unique_devices",
 		func (m *api.Metrics) *api.Count {
 			return m.AdUniqueDevices
 		},
 	))
 	metricAdders = append(metricAdders, createCountPercentageFunc(
-		"ad_video_playback_failures", 
+		"ad_video_playback_failures",
 		func (m *api.Metrics) *api.CountPercentage {
 			return m.AdVideoPlaybackFailures
 		},
 	))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"ad_video_restart_time", 
+		"ad_video_restart_time",
 		func (m *api.Metrics) *api.Gauge {
 			return m.AdVideoRestartTime
 		},
 	))
 	metricAdders = append(metricAdders, createCountPercentageFunc(
-		"ad_video_start_failures", 
+		"ad_video_start_failures",
 		func (m *api.Metrics) *api.CountPercentage {
 			return m.AdVideoStartFailures
 		},
 	))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"ad_video_start_time", 
+		"ad_video_start_time",
 		func (m *api.Metrics) *api.Gauge {
 			return m.AdVideoStartTime
 		},
 	))
 	metricAdders = append(metricAdders, createCountFunc(
-		"attempts", 
+		"attempts",
 		func (m *api.Metrics) *api.Count {
 			return m.Attempts
 		},
 	))
 	metricAdders = append(metricAdders, createCountPercentageFunc(
-		"attempts_with_pre_roll", 
+		"attempts_with_pre_roll",
 		func (m *api.Metrics) *api.CountPercentage {
 			return m.AttemptsWithPreRoll
 		},
 	))
 	metricAdders = append(metricAdders, createCountPercentageFunc(
-		"attempts_without_pre_roll", 
+		"attempts_without_pre_roll",
 		func (m *api.Metrics) *api.CountPercentage {
 			return m.AttemptsWithoutPreRoll
 		},
 	))
 	metricAdders = append(metricAdders, createCountPercentageFunc(
-		"bad_session", 
+		"bad_session",
 		func (m *api.Metrics) *api.CountPercentage {
 			return m.BadSession
 		},
 	))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"bad_session_average_life_playing_time_mins", 
+		"bad_session_average_life_playing_time_mins",
 		func (m *api.Metrics) *api.Gauge {
 			return m.BadSessionAverageLifePlayingTimeMins
 		},
 	))
 	metricAdders = append(metricAdders, createCountPercentageFunc(
-		"bad_unique_devices", 
+		"bad_unique_devices",
 		func (m *api.Metrics) *api.CountPercentage {
 			return m.BadUniqueDevices
 		},
 	))
 	metricAdders = append(metricAdders, createCountPercentageFunc(
-		"bad_unique_viewers", 
+		"bad_unique_viewers",
 		func (m *api.Metrics) *api.CountPercentage {
 			return m.BadUniqueViewers
 		},
 	))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"bitrate", 
+		"bitrate",
 		func (m *api.Metrics) *api.Gauge {
 			return BitrateToGauge(m.Bitrate)
 		},
 	))
 	metricAdders = append(metricAdders, createCountFunc(
-		"concurrent_plays", 
+		"concurrent_plays",
 		func (m *api.Metrics) *api.Count {
 			return m.ConcurrentPlays
 		},
 	))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"connection_induced_rebuffering_ratio", 
+		"connection_induced_rebuffering_ratio",
 		func (m *api.Metrics) *api.Gauge {
 			return RatioToGauge(m.ConnectionInducedRebufferingRatio)
 		},
 	))
 	metricAdders = append(metricAdders, createMetricsFunc(addEndedPlays))
 	metricAdders = append(metricAdders, createCountPercentageFunc(
-		"ended_plays_with_ads", 
+		"ended_plays_with_ads",
 		func (m *api.Metrics) *api.CountPercentage {
 			return m.EndedPlaysWithAds
 		},
 	))
 	metricAdders = append(metricAdders, createCountPercentageFunc(
-		"ended_plays_without_ads", 
+		"ended_plays_without_ads",
 		func (m *api.Metrics) *api.CountPercentage {
 			return m.EndedPlaysWithoutAds
 		},
 	))
 	metricAdders = append(metricAdders, createCountPercentageFunc(
-		"exit_before_video_starts", 
+		"exit_before_video_starts",
 		func (m *api.Metrics) *api.CountPercentage {
 			return m.ExitBeforeVideoStarts
 		},
 	))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"framerate", 
+		"framerate",
 		func (m *api.Metrics) *api.Gauge {
 			return FramerateToGauge(m.Framerate)
 		},
 	))
 	metricAdders = append(metricAdders, createCountFunc(
-		"good_session", 
+		"good_session",
 		func (m *api.Metrics) *api.Count {
 			return m.GoodSession
 		},
 	))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"good_session_average_life_playing_time_mins", 
+		"good_session_average_life_playing_time_mins",
 		func (m *api.Metrics) *api.Gauge {
 			return m.GoodSessionAverageLifePlayingTimeMins
 		},
 	))
 	metricAdders = append(metricAdders, createCountFunc(
-		"good_unique_devices", 
+		"good_unique_devices",
 		func (m *api.Metrics) *api.Count {
 			return m.GoodUniqueDevices
 		},
 	))
 	metricAdders = append(metricAdders, createCountFunc(
-		"good_unique_viewers", 
+		"good_unique_viewers",
 		func (m *api.Metrics) *api.Count {
 			return m.GoodUniqueViewers
 		},
 	))
 	metricAdders = append(metricAdders, createCountPercentageFunc(
-		"high_rebuffering", 
+		"high_rebuffering",
 		func (m *api.Metrics) *api.CountPercentage {
 			return m.HighRebuffering
 		},
 	))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"high_rebuffering_with_ads", 
+		"high_rebuffering_with_ads",
 		func (m *api.Metrics) *api.Gauge {
 			return PercentageToGauge(m.HighRebufferingWithAds)
 		},
 	))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"high_rebuffering_without_ads", 
+		"high_rebuffering_without_ads",
 		func (m *api.Metrics) *api.Gauge {
 			return PercentageToGauge(m.HighRebufferingWithoutAds)
 		},
 	))
 	metricAdders = append(metricAdders, createCountPercentageFunc(
-		"high_startup_time", 
+		"high_startup_time",
 		func (m *api.Metrics) *api.CountPercentage {
 			return m.HighStartupTime
 		},
 	))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"high_startup_time_with_pre_roll", 
+		"high_startup_time_with_pre_roll",
 		func (m *api.Metrics) *api.Gauge {
 			return PercentageToGauge(m.HighStartupTimeWithPreRoll)
 		},
 	))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"high_startup_time_without_pre_roll", 
+		"high_startup_time_without_pre_roll",
 		func (m *api.Metrics) *api.Gauge {
 			return PercentageToGauge(m.HighStartupTimeWithoutPreRoll)
 		},
 	))
 	metricAdders = append(metricAdders, createCountFunc(
-		"interval_minutes_played", 
+		"interval_minutes_played",
 		func (m *api.Metrics) *api.Count {
 			return m.IntervalMinutesPlayed
 		},
 	))
 	metricAdders = append(metricAdders, createCountPercentageFunc(
-		"low_bitrate", 
+		"low_bitrate",
 		func (m *api.Metrics) *api.CountPercentage {
 			return m.LowBitrate
 		},
 	))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"low_bitrate_with_ads", 
+		"low_bitrate_with_ads",
 		func (m *api.Metrics) *api.Gauge {
 			return PercentageToGauge(m.LowBitrateWithAds)
 		},
 	))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"low_bitrate_without_ads", 
+		"low_bitrate_without_ads",
 		func (m *api.Metrics) *api.Gauge {
 			return PercentageToGauge(m.LowBitrateWithoutAds)
 		},
 	))
 	metricAdders = append(metricAdders, createMetricsFunc(addMinutesPlayed))
 	metricAdders = append(metricAdders, createCountPercentageFunc(
-		"non_zero_cirr_ended_plays", 
+		"non_zero_cirr_ended_plays",
 		func (m *api.Metrics) *api.CountPercentage {
 			return m.NonZeroCirrEndedPlays
 		},
 	))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"percentage_complete", 
+		"percentage_complete",
 		func (m *api.Metrics) *api.Gauge {
 			return PercentageToGauge(m.PercentageComplete)
 		},
 	))
 	metricAdders = append(metricAdders, createCountPercentageFunc(
-		"plays", 
+		"plays",
 		func (m *api.Metrics) *api.CountPercentage {
 			return m.Plays
 		},
 	))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"rebuffering_ratio", 
+		"rebuffering_ratio",
 		func (m *api.Metrics) *api.Gauge {
 			return RatioToGauge(m.RebufferingRatio)
 		},
 	))
 	metricAdders = append(metricAdders, createCountFunc(
-		"spi_streams", 
+		"spi_streams",
 		func (m *api.Metrics) *api.Count {
 			return m.SpiStreams
 		},
 	))
 	metricAdders = append(metricAdders, createCountFunc(
-		"spi_unique_devices", 
+		"spi_unique_devices",
 		func (m *api.Metrics) *api.Count {
 			return m.SpiUniqueDevices
 		},
 	))
 	metricAdders = append(metricAdders, createCountFunc(
-		"spi_unique_viewers", 
+		"spi_unique_viewers",
 		func (m *api.Metrics) *api.Count {
 			return m.SpiUniqueViewers
 		},
 	))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"streaming_performance_index", 
+		"streaming_performance_index",
 		func (m *api.Metrics) *api.Gauge {
 			return m.StreamingPerformanceIndex
 		},
 	))
 	metricAdders = append(metricAdders, createCountFunc(
-		"unique_devices", 
+		"unique_devices",
 		func (m *api.Metrics) *api.Count {
 			return m.UniqueDevices
 		},
 	))
 	metricAdders = append(metricAdders, createCountPercentageFunc(
-		"video_playback_failures", 
+		"video_playback_failures",
 		func (m *api.Metrics) *api.CountPercentage {
 			return m.VideoPlaybackFailures
 		},
 	))
 	metricAdders = append(metricAdders, createCountPercentageFunc(
-		"video_playback_failures_business", 
+		"video_playback_failures_business",
 		func (m *api.Metrics) *api.CountPercentage {
 			return m.VideoPlaybackFailuresBusiness
 		},
 	))
 	metricAdders = append(metricAdders, createCountPercentageFunc(
-		"video_playback_failures_tech", 
+		"video_playback_failures_tech",
 		func (m *api.Metrics) *api.CountPercentage {
 			return m.VideoPlaybackFailuresTech
 		},
 	))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"video_playback_failures_tech_with_ads", 
+		"video_playback_failures_tech_with_ads",
 		func (m *api.Metrics) *api.Gauge {
 			return PercentageToGauge(m.VideoPlaybackFailuresTechWithAds)
 		},
 	))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"video_playback_failures_tech_without_ads", 
+		"video_playback_failures_tech_without_ads",
 		func (m *api.Metrics) *api.Gauge {
 			return PercentageToGauge(m.VideoPlaybackFailuresTechWithoutAds)
 		},
 	))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"video_restart_time", 
+		"video_restart_time",
 		func (m *api.Metrics) *api.Gauge {
 			return m.VideoRestartTime
 		},
 	))
 	metricAdders = append(metricAdders, createCountPercentageFunc(
-		"video_start_failures", 
+		"video_start_failures",
 		func (m *api.Metrics) *api.CountPercentage {
 			return m.VideoStartFailures
 		},
 	))
 	metricAdders = append(metricAdders, createCountPercentageFunc(
-		"video_start_failures_business", 
+		"video_start_failures_business",
 		func (m *api.Metrics) *api.CountPercentage {
 			return m.VideoStartFailuresBusiness
 		},
 	))
 	metricAdders = append(metricAdders, createCountPercentageFunc(
-		"video_start_failures_tech", 
+		"video_start_failures_tech",
 		func (m *api.Metrics) *api.CountPercentage {
 			return m.VideoStartFailuresTech
 		},
 	))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"video_start_failures_tech_with_pre_roll", 
+		"video_start_failures_tech_with_pre_roll",
 		func (m *api.Metrics) *api.Gauge {
 			return PercentageToGauge(m.VideoStartFailuresTechWithPreRoll)
 		},
 	))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"video_start_failures_tech_without_pre_roll", 
+		"video_start_failures_tech_without_pre_roll",
 		func (m *api.Metrics) *api.Gauge {
 			return PercentageToGauge(m.VideoStartFailuresTechWithoutPreRoll)
 		},
 	))
 	metricAdders = append(metricAdders, createGaugeFunc(
-		"video_start_time", 
+		"video_start_time",
 		func (m *api.Metrics) *api.Gauge {
 			return m.VideoStartTime
 		},
 	))
 	metricAdders = append(metricAdders, createCountPercentageFunc(
-		"zero_cirr_ended_plays", 
+		"zero_cirr_ended_plays",
 		func (m *api.Metrics) *api.CountPercentage {
 			return m.ZeroCirrEndedPlays
 		},
@@ -745,6 +745,7 @@ func getMetricsData(
 		cfg.StartOffset,
 		cfg.EndOffset,
 		cfg.Granularity,
+		cfg.RealTime,
 		log,
 	)
 	if err != nil {
@@ -764,7 +765,7 @@ func getMetricsData(
 			continue
 		}
 
-		for _, d := range m.Dimensions {			
+		for _, d := range m.Dimensions {
 			metricData, err := getMetricDataByDimension(c, log, &m, d)
 			if err != nil {
 				return err
@@ -772,7 +773,7 @@ func getMetricsData(
 				for i := 0; i < len(metricData.TimeSeries); i += 1 {
 					dimensions := metricData.TimeSeries[i]
 					ts := time.UnixMilli(dimensions.TimeStamp.EpochMs)
-			
+
 					for j := 0; j < len(dimensions.DimensionalData); j += 1 {
 						addDimensionalMetrics(
 							entity,
@@ -805,6 +806,7 @@ func getMetricData(
 			m.StartOffset,
 			m.EndOffset,
 			m.Granularity,
+			m.RealTime,
 		)
 	} else if m.Metric != "" {
 		log.Debugf(
@@ -818,6 +820,7 @@ func getMetricData(
 			m.StartOffset,
 			m.EndOffset,
 			m.Granularity,
+			m.RealTime,
 		)
 	} else if len(m.Names) > 0 {
 		log.Debugf(
@@ -831,6 +834,7 @@ func getMetricData(
 			m.StartOffset,
 			m.EndOffset,
 			m.Granularity,
+			m.RealTime,
 		)
 	}
 
@@ -857,6 +861,7 @@ func getMetricDataByDimension(
 			m.StartOffset,
 			m.EndOffset,
 			m.Granularity,
+			m.RealTime,
 		)
 	} else if m.Metric != "" {
 		log.Debugf(
@@ -872,6 +877,7 @@ func getMetricDataByDimension(
 			m.StartOffset,
 			m.EndOffset,
 			m.Granularity,
+			m.RealTime,
 		)
 	} else if len(m.Names) > 0 {
 		log.Debugf(
@@ -887,6 +893,7 @@ func getMetricDataByDimension(
 			m.StartOffset,
 			m.EndOffset,
 			m.Granularity,
+			m.RealTime,
 		)
 	}
 
